@@ -1,4 +1,4 @@
-package com.chichkanov.backend.user
+package com.chichkanov.backend.user.model
 
 import org.springframework.security.core.GrantedAuthority
 

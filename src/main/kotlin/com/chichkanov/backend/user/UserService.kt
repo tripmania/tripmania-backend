@@ -2,13 +2,16 @@ package com.chichkanov.backend.user
 
 import com.chichkanov.backend.error.CustomException
 import com.chichkanov.backend.security.JwtTokenProvider
+import com.chichkanov.backend.user.model.TokenResponse
+import com.chichkanov.backend.user.model.User
+import com.chichkanov.backend.user.model.UserSignInRequest
+import com.chichkanov.backend.user.model.UserSignUpRequest
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.ResponseStatus
 
 @Service
 class UserService constructor(
@@ -66,6 +69,3 @@ class UserService constructor(
     }
 
 }
-
-@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "User not found")
-class UserNotFoundException : RuntimeException()

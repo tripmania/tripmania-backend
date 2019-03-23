@@ -1,5 +1,10 @@
 package com.chichkanov.backend.user
 
+import com.chichkanov.backend.user.error.UserNotFoundException
+import com.chichkanov.backend.user.model.TokenResponse
+import com.chichkanov.backend.user.model.User
+import com.chichkanov.backend.user.model.UserSignInRequest
+import com.chichkanov.backend.user.model.UserSignUpRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
@@ -39,19 +44,3 @@ class UserController constructor(
     }
 
 }
-
-data class UserSignUpRequest(
-        val login: String,
-        val email: String,
-        val password: String,
-        val name: String? = null
-)
-
-data class UserSignInRequest(
-        val login: String,
-        val password: String
-)
-
-data class TokenResponse(
-        val token: String
-)

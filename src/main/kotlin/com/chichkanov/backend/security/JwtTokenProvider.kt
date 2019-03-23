@@ -1,6 +1,6 @@
 package com.chichkanov.backend.security
 
-import com.chichkanov.backend.user.Role
+import com.chichkanov.backend.user.model.Role
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -49,12 +49,17 @@ class JwtTokenProvider constructor(
     }
 
     fun getAuthentication(token: String): Authentication {
-        val userDetails = myUserDetails.loadUserByUsername(getUsername(token))
+        val userDetails = myUserDetails.loadUserByUsername(getLogin(token))
         return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
     }
 
-    fun getUsername(token: String): String {
+    fun getLogin(token: String): String {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body.subject
+    }
+
+    fun getLogin(req: HttpServletRequest): String? {
+        val token = resolveToken(req) ?: return null
+        return getLogin(token)
     }
 
     fun resolveToken(req: HttpServletRequest): String? {

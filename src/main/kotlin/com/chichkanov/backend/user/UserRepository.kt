@@ -1,5 +1,6 @@
 package com.chichkanov.backend.user
 
+import com.chichkanov.backend.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 
 

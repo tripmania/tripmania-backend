@@ -1,7 +1,7 @@
 package com.chichkanov.backend.security
 
-import com.chichkanov.backend.user.UserNotFoundException
 import com.chichkanov.backend.user.UserRepository
+import com.chichkanov.backend.user.error.UserNotFoundException
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
