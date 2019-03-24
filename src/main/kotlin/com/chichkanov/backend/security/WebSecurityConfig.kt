@@ -12,6 +12,11 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import java.util.*
+import javax.servlet.http.HttpServletRequest
+
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -31,12 +36,19 @@ class WebSecurityConfig constructor(
                 .antMatchers("/h2-console/**/**").permitAll()
                 .anyRequest().authenticated()
 
+        http.cors().configurationSource(object : CorsConfigurationSource {
+            override fun getCorsConfiguration(request: HttpServletRequest): CorsConfiguration? {
+                val config = CorsConfiguration()
+                config.allowedHeaders = Collections.singletonList("*")
+                config.allowedMethods = Collections.singletonList("*")
+                config.addAllowedOrigin("*")
+                config.allowCredentials = true
+                return config
+            }
+        })
+
         http.exceptionHandling().accessDeniedPage("/login")
-
         http.apply<SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>>(JwtTokenFilterConfigurer(jwtTokenProvider))
-
-        // Optional, if you want to test the API from a browser
-        // http.httpBasic();
     }
 
     @Throws(Exception::class)

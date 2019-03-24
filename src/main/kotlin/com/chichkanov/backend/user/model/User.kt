@@ -1,5 +1,6 @@
 package com.chichkanov.backend.user.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -7,6 +8,7 @@ data class User constructor(
         @Column(unique = true)
         val email: String,
         val login: String,
+        @JsonIgnore
         val password: String,
         val name: String? = null,
         val photoUrl: String? = null,
