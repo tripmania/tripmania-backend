@@ -70,6 +70,7 @@ class JwtTokenProvider constructor(
     }
 
     fun validateToken(token: String): Boolean {
+        // TODO Return 401 error code in case of token expired
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
             return true

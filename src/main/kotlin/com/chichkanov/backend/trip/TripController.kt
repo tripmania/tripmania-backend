@@ -13,7 +13,7 @@ class TripController constructor(
         private val jwtTokenProvider: JwtTokenProvider
 ) {
 
-    @GetMapping
+    @GetMapping("/{userId}")
     fun getTripsByUser(request: HttpServletRequest): ResponseEntity<List<Trip>> {
         val login = jwtTokenProvider.getLogin(request)!!
         return ResponseEntity.ok(tripService.getTripsByUser(login))

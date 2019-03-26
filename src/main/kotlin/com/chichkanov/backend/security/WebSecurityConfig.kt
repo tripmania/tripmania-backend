@@ -31,8 +31,8 @@ class WebSecurityConfig constructor(
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http.authorizeRequests()//
-                .antMatchers("/users/sign-in").permitAll()//
-                .antMatchers("/users/sign-up").permitAll()//
+                .antMatchers("/users/sign-in").permitAll()
+                .antMatchers("/users/sign-up").permitAll()
                 .antMatchers("/h2-console/**/**").permitAll()
                 .anyRequest().authenticated()
 
