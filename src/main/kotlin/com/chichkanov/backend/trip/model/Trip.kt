@@ -1,10 +1,8 @@
-package com.chichkanov.backend.trip
+package com.chichkanov.backend.trip.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import org.hibernate.annotations.CollectionType
+import javax.persistence.*
 
 @Entity
 data class Trip(
@@ -13,7 +11,9 @@ data class Trip(
         val title: String,
         val startDate: Long,
         val endDate: Long,
-        val photoUrl: String? = null
+        val photoUrl: String? = null,
+        @ElementCollection
+        val path: List<String> = emptyList()
 ) {
 
     @Id

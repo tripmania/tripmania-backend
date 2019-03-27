@@ -2,6 +2,7 @@ package com.chichkanov.backend.trip
 
 import com.chichkanov.backend.error.InsufficientPrivilegesException
 import com.chichkanov.backend.trip.error.TripNotFoundException
+import com.chichkanov.backend.trip.model.Trip
 import com.chichkanov.backend.trip.model.TripRequest
 import com.chichkanov.backend.user.UserRepository
 import com.chichkanov.backend.user.error.UserNotFoundException
@@ -29,7 +30,8 @@ class TripService constructor(
                 tripRequest.title,
                 tripRequest.startDate,
                 tripRequest.endDate,
-                tripRequest.photoUrl
+                tripRequest.photoUrl,
+                tripRequest.path
         )
         return tripRepository.save(trip)
     }
@@ -47,7 +49,8 @@ class TripService constructor(
                 tripRequest.title,
                 tripRequest.startDate,
                 tripRequest.endDate,
-                tripRequest.photoUrl
+                tripRequest.photoUrl,
+                tripRequest.path
         ).apply { id = trip.id }
 
         return tripRepository.save(updatedTrip)

@@ -1,6 +1,7 @@
 package com.chichkanov.backend.trip
 
 import com.chichkanov.backend.security.JwtTokenProvider
+import com.chichkanov.backend.trip.model.Trip
 import com.chichkanov.backend.trip.model.TripRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
