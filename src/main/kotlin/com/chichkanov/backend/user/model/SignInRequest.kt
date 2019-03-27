@@ -1,6 +1,6 @@
 package com.chichkanov.backend.user.model
 
-data class UserSignInRequest(
+data class SignInRequest(
         val login: String,
         val password: String
 )

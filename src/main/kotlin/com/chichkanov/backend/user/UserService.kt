@@ -2,10 +2,7 @@ package com.chichkanov.backend.user
 
 import com.chichkanov.backend.error.CustomException
 import com.chichkanov.backend.security.JwtTokenProvider
-import com.chichkanov.backend.user.model.TokenResponse
-import com.chichkanov.backend.user.model.User
-import com.chichkanov.backend.user.model.UserSignInRequest
-import com.chichkanov.backend.user.model.UserSignUpRequest
+import com.chichkanov.backend.user.model.*
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,48 +13,62 @@ import org.springframework.stereotype.Service
 @Service
 class UserService constructor(
         private val userRepository: UserRepository,
+        private val refreshTokenHashRepository: RefreshTokenHashRepository,
         private val passwordEncoder: PasswordEncoder,
         private val jwtTokenProvider: JwtTokenProvider,
         private val authenticationManager: AuthenticationManager
 ) {
 
-    fun signUp(userSignUpRequest: UserSignUpRequest): TokenResponse {
-        if (userRepository.existsByLogin(userSignUpRequest.login)) {
+    fun signUp(signUpRequest: SignUpRequest): TokenResponse {
+        if (userRepository.existsByLogin(signUpRequest.login)) {
             throw CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Login already in use")
         }
-        if (userRepository.existsByEmail(userSignUpRequest.email)) {
+        if (userRepository.existsByEmail(signUpRequest.email)) {
             throw CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Email already in use")
         }
 
         val user = User(
-                userSignUpRequest.email,
-                userSignUpRequest.login,
-                passwordEncoder.encode(userSignUpRequest.password),
-                userSignUpRequest.name
+                signUpRequest.email,
+                signUpRequest.login,
+                passwordEncoder.encode(signUpRequest.password),
+                signUpRequest.name
         )
         userRepository.save(user)
-
-        return TokenResponse(jwtTokenProvider.createToken(user.login, user.roles.toList()))
+        return createTokenResponse(user)
     }
 
-    fun signIn(userSignInRequest: UserSignInRequest): TokenResponse {
+    fun signIn(signInRequest: SignInRequest): TokenResponse {
         try {
             authenticationManager.authenticate(UsernamePasswordAuthenticationToken(
-                    userSignInRequest.login,
-                    userSignInRequest.password
+                    signInRequest.login,
+                    signInRequest.password
             ))
-            val user = userRepository.findByLogin(userSignInRequest.login)!!
-            return TokenResponse(jwtTokenProvider.createToken(userSignInRequest.login, user.roles.toList()))
+            val user = userRepository.findByLogin(signInRequest.login)!!
+            return createTokenResponse(user)
         } catch (e: AuthenticationException) {
             throw CustomException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid username/password supplied")
         }
     }
 
-    fun refreshToken(login: String): TokenResponse {
-        return TokenResponse(jwtTokenProvider.createToken(
-                login,
-                userRepository.findByLogin(login)!!.roles.toList()
-        ))
+    fun refreshToken(refreshTokenRequest: RefreshTokenRequest): TokenResponse {
+        val oldRefreshToken = refreshTokenRequest.refreshToken
+        jwtTokenProvider.validateToken(oldRefreshToken)
+        val login = jwtTokenProvider.getLogin(oldRefreshToken)
+
+        val user = userRepository.findByLogin(login)!!
+        val newAccess = jwtTokenProvider.createAccessToken(user.login, user.roles.toList())
+        val newRefresh = jwtTokenProvider.createRefreshToken(user.login, user.roles.toList())
+        val newRefreshHash = newRefresh.hashCode()
+
+        val currentRefreshes = refreshTokenHashRepository.findByUserId(user.id)
+        refreshTokenHashRepository.save(RefreshTokenHash(user, newRefreshHash))
+
+        val oldRefreshTokenModel = currentRefreshes.find { it.tokenHash == oldRefreshToken.hashCode() }
+        if (oldRefreshTokenModel != null) {
+            refreshTokenHashRepository.delete(oldRefreshTokenModel)
+        }
+
+        return TokenResponse(newAccess, newRefresh)
     }
 
     fun getAllUsers(): List<User> {
@@ -66,6 +77,12 @@ class UserService constructor(
 
     fun getUserById(id: Long): User? {
         return userRepository.findById(id).orElse(null)
+    }
+
+    private fun createTokenResponse(user: User): TokenResponse {
+        val newAccess = jwtTokenProvider.createAccessToken(user.login, user.roles.toList())
+        val newRefresh = jwtTokenProvider.createRefreshToken(user.login, user.roles.toList())
+        return TokenResponse(newAccess, newRefresh)
     }
 
 }

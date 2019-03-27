@@ -1,6 +1,5 @@
 package com.chichkanov.backend.user.model
 
-data class TokenResponse(
-        val accessToken: String,
+data class RefreshTokenRequest(
         val refreshToken: String
 )

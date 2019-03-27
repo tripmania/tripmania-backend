@@ -13,15 +13,13 @@ class TripService constructor(
         private val userRepository: UserRepository
 ) {
 
-    fun getTripsByUser(login: String): List<Trip> {
-        val user = userRepository.findByLogin(login) ?: throw UserNotFoundException()
+    fun getTripsByUser(userId: Long): List<Trip> {
+        val user = userRepository.findById(userId).orElseThrow { UserNotFoundException() }
         return tripRepository.findByUserId(user.id)
     }
 
     fun getTripById(tripId: Long, userLogin: String): Trip {
-        val trip = tripRepository.findById(tripId).orElseThrow { TripNotFoundException() }
-        checkTripEditUserPrivileges(trip, userLogin)
-        return trip
+        return tripRepository.findById(tripId).orElseThrow { TripNotFoundException() }
     }
 
     fun addTrip(tripRequest: TripRequest, userLogin: String): Trip {

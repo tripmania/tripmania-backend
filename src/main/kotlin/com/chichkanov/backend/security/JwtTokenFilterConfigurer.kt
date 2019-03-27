@@ -10,9 +10,9 @@ class JwtTokenFilterConfigurer constructor(
 ) : SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>() {
 
     @Throws(Exception::class)
-    override fun configure(http: HttpSecurity?) {
+    override fun configure(http: HttpSecurity) {
         val customFilter = JwtTokenFilter(jwtTokenProvider)
-        http!!.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 
 }

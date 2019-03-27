@@ -3,6 +3,7 @@ package com.chichkanov.backend.security
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -12,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
+import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import java.util.*
@@ -33,8 +35,10 @@ class WebSecurityConfig constructor(
         http.authorizeRequests()//
                 .antMatchers("/users/sign-in").permitAll()
                 .antMatchers("/users/sign-up").permitAll()
-                .antMatchers("/h2-console/**/**").permitAll()
+                .antMatchers("/users/refresh").permitAll()
                 .anyRequest().authenticated()
+
+        http.exceptionHandling().authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 
         http.cors().configurationSource(object : CorsConfigurationSource {
             override fun getCorsConfiguration(request: HttpServletRequest): CorsConfiguration? {
@@ -49,22 +53,6 @@ class WebSecurityConfig constructor(
 
         http.exceptionHandling().accessDeniedPage("/login")
         http.apply<SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>>(JwtTokenFilterConfigurer(jwtTokenProvider))
-    }
-
-    @Throws(Exception::class)
-    override fun configure(web: WebSecurity) {
-        // Allow swagger to be accessed without authentication
-        web.ignoring().antMatchers("/v2/api-docs")//
-                .antMatchers("/swagger-resources/**")//
-                .antMatchers("/swagger-ui.html")//
-                .antMatchers("/configuration/**")//
-                .antMatchers("/webjars/**")//
-                .antMatchers("/public")
-
-                // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)
-                .and()
-                .ignoring()
-                .antMatchers("/h2-console/**/**")
     }
 
     @Bean

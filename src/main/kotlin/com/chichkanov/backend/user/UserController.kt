@@ -1,14 +1,9 @@
 package com.chichkanov.backend.user
 
 import com.chichkanov.backend.user.error.UserNotFoundException
-import com.chichkanov.backend.user.model.TokenResponse
-import com.chichkanov.backend.user.model.User
-import com.chichkanov.backend.user.model.UserSignInRequest
-import com.chichkanov.backend.user.model.UserSignUpRequest
+import com.chichkanov.backend.user.model.*
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/users")
@@ -17,19 +12,18 @@ class UserController constructor(
 ) {
 
     @PostMapping("/sign-up")
-    fun signUp(@RequestBody userSignUpRequest: UserSignUpRequest): TokenResponse {
-        return userService.signUp(userSignUpRequest)
+    fun signUp(@RequestBody signUpRequest: SignUpRequest): TokenResponse {
+        return userService.signUp(signUpRequest)
     }
 
     @PostMapping("/sign-in")
-    fun signIn(@RequestBody userSignInRequest: UserSignInRequest): TokenResponse {
-        return userService.signIn(userSignInRequest)
+    fun signIn(@RequestBody signInRequest: SignInRequest): TokenResponse {
+        return userService.signIn(signInRequest)
     }
 
-    @GetMapping("/refresh")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    fun refreshToken(req: HttpServletRequest): TokenResponse {
-        return userService.refreshToken(req.remoteUser)
+    @PostMapping("/refresh")
+    fun refreshToken(@RequestBody refreshTokenRequest: RefreshTokenRequest): TokenResponse {
+        return userService.refreshToken(refreshTokenRequest)
     }
 
     @RequestMapping("/{id}")
