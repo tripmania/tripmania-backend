@@ -2,6 +2,7 @@ package com.chichkanov.backend.user
 
 import com.chichkanov.backend.error.CustomException
 import com.chichkanov.backend.security.JwtTokenProvider
+import com.chichkanov.backend.user.error.UserNotFoundException
 import com.chichkanov.backend.user.model.*
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -75,8 +76,12 @@ class UserService constructor(
         return userRepository.findAll()
     }
 
-    fun getUserById(id: Long): User? {
-        return userRepository.findById(id).orElse(null)
+    fun getUserById(id: Long): User {
+        return userRepository.findById(id).orElseThrow { throw UserNotFoundException() }
+    }
+
+    fun gerUserByLogin(userLogin: String): User {
+        return userRepository.findByLogin(userLogin) ?: throw UserNotFoundException()
     }
 
     private fun createTokenResponse(user: User): TokenResponse {

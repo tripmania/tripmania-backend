@@ -5,6 +5,7 @@ import javax.persistence.*
 
 @Entity
 data class User constructor(
+        @JsonIgnore
         @Column(unique = true)
         val email: String,
         val login: String,
@@ -13,6 +14,7 @@ data class User constructor(
         val name: String? = null,
         val photoUrl: String? = null,
         val status: String? = null,
+        @JsonIgnore
         @ElementCollection(fetch = FetchType.EAGER)
         val roles: Set<Role> = setOf(Role.ROLE_CLIENT)
 ) {
