@@ -72,16 +72,20 @@ class UserService constructor(
         return TokenResponse(newAccess, newRefresh)
     }
 
-    fun getAllUsers(): List<User> {
-        return userRepository.findAll()
-    }
-
     fun getUserById(id: Long): User {
         return userRepository.findById(id).orElseThrow { throw UserNotFoundException() }
     }
 
     fun gerUserByLogin(userLogin: String): User {
         return userRepository.findByLogin(userLogin) ?: throw UserNotFoundException()
+    }
+
+    fun updateUserInfo(userLogin: String, updateUserInfoRequest: UpdateUserInfoReauest): User {
+        val user = userRepository.findByLogin(userLogin) ?: throw UserNotFoundException()
+        user.status = updateUserInfoRequest.status
+        user.name = updateUserInfoRequest.name
+        user.photoUrl = updateUserInfoRequest.photoUrl
+        return userRepository.save(user)
     }
 
     private fun createTokenResponse(user: User): TokenResponse {

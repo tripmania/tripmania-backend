@@ -40,9 +40,10 @@ class UserController constructor(
         )
     }
 
-    @GetMapping("/all")
-    fun getUserById(): ResponseEntity<List<User>> {
-        return ResponseEntity.ok(userService.getAllUsers())
+    @PutMapping("/updateUserInfo")
+    fun updateUserInfo(@RequestBody updateUserInfoRequest: UpdateUserInfoReauest, request: HttpServletRequest): ResponseEntity<User> {
+        val userLogin = jwtTokenProvider.getLogin(request)!!
+        return ResponseEntity.ok(userService.updateUserInfo(userLogin, updateUserInfoRequest))
     }
 
 }

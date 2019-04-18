@@ -11,9 +11,9 @@ data class User constructor(
         val login: String,
         @JsonIgnore
         val password: String,
-        val name: String? = null,
-        val photoUrl: String? = null,
-        val status: String? = null,
+        var name: String? = null,
+        var photoUrl: String? = null,
+        var status: String? = null,
         @JsonIgnore
         @ElementCollection(fetch = FetchType.EAGER)
         val roles: Set<Role> = setOf(Role.ROLE_CLIENT)
